@@ -179,7 +179,7 @@ func compileSelector(s *bundlev1.PatchSelector, values map[string]interface{}) (
 			// Compile regexp
 			re, err := regexp.Compile(value)
 			if err != nil {
-				return nil, fmt.Errorf("unable to compile matchSecret regexp `%s`: %w", s.MatchPath.Regex, err)
+				return nil, fmt.Errorf("unable to compile matchSecret regexp `%s`: %w", value, err)
 			}
 
 			// Return specification
