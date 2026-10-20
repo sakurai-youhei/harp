@@ -41,7 +41,7 @@ func MatchSecretRegex(regex *regexp.Regexp) Specification {
 
 // MatchSecretGlob returns a secret key matcher specification with glob query.
 func MatchSecretGlob(pattern string) Specification {
-	return &matchPath{
+	return &matchSecret{
 		g: glob.MustCompile(pattern),
 	}
 }
