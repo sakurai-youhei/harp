@@ -166,7 +166,7 @@ func compileSelector(s *bundlev1.PatchSelector, values map[string]interface{}) (
 			}
 
 			// Return specification
-			return selector.MatchSecretGlob(value), nil
+			return selector.MatchSecretGlob(value)
 		case s.MatchSecret.Regex != "":
 			// Evaluation with template engine first
 			value, err := engine.Render(s.MatchSecret.Regex, map[string]interface{}{

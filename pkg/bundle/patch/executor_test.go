@@ -99,6 +99,17 @@ func Test_compileSelector_Fuzz(t *testing.T) {
 	}
 }
 
+func Test_compileSelector_MatchSecretInvalidGlob(t *testing.T) {
+	s := &bundlev1.PatchSelector{
+		MatchSecret: &bundlev1.PatchSelectorMatchSecret{Glob: "["},
+	}
+
+	// Must return an error instead of panicking.
+	if _, err := compileSelector(s, map[string]interface{}{}); err == nil {
+		t.Fatal("compileSelector() expected an error, got nil")
+	}
+}
+
 func Test_applyPackagePatch_Fuzz(t *testing.T) {
 	// Making sure the applyPatchPackage never panics
 	for i := 0; i < 500; i++ {

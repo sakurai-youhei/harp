@@ -18,6 +18,7 @@
 package selector
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/gobwas/glob"
@@ -40,10 +41,17 @@ func MatchSecretRegex(regex *regexp.Regexp) Specification {
 }
 
 // MatchSecretGlob returns a secret key matcher specification with glob query.
-func MatchSecretGlob(pattern string) Specification {
-	return &matchPath{
-		g: glob.MustCompile(pattern),
+func MatchSecretGlob(pattern string) (Specification, error) {
+	// Compile and check filter
+	g, err := glob.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("unable to compile glob filter: %w", err)
 	}
+
+	// No error
+	return &matchPath{
+		g: g,
+	}, nil
 }
 
 // matchSecret checks if secret key match the given string

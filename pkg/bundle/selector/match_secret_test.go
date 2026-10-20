@@ -220,3 +220,35 @@ func Test_matchSecret_IsSatisfiedBy_Fuzz(t *testing.T) {
 		})
 	}
 }
+
+func Test_MatchSecretGlob(t *testing.T) {
+	p := &bundlev1.Package{
+		Name: "app/target",
+		Secrets: &bundlev1.SecretChain{
+			Data: []*bundlev1.KV{{Key: "k"}},
+		},
+	}
+
+	tests := []struct {
+		name    string
+		pattern string
+		want    bool
+		wantErr bool
+	}{
+		{name: "invalid pattern", pattern: "[", wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			spec, err := MatchSecretGlob(tt.pattern)
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("MatchSecretGlob() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if tt.wantErr {
+				return
+			}
+			if got := spec.IsSatisfiedBy(p); got != tt.want {
+				t.Errorf("IsSatisfiedBy() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
