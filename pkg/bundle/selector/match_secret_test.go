@@ -236,6 +236,9 @@ func Test_MatchSecretGlob(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "invalid pattern", pattern: "[", wantErr: true},
+		{name: "secret key", pattern: "k", want: true},
+		{name: "package path pattern", pattern: "app/*", want: false},
+		{name: "package path", pattern: "app/target", want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

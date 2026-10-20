@@ -49,7 +49,7 @@ func MatchSecretGlob(pattern string) (Specification, error) {
 	}
 
 	// No error
-	return &matchPath{
+	return &matchSecret{
 		g: g,
 	}, nil
 }
