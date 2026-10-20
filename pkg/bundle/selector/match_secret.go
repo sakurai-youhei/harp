@@ -55,8 +55,6 @@ type matchSecret struct {
 
 // IsSatisfiedBy returns specification satisfaction status
 func (s *matchSecret) IsSatisfiedBy(object interface{}) bool {
-	match := false
-
 	// If object is a package
 	if p, ok := object.(*bundlev1.Package); ok {
 		// Ignore nil secret package
@@ -64,17 +62,24 @@ func (s *matchSecret) IsSatisfiedBy(object interface{}) bool {
 			return false
 		}
 
+		// The package is selected when any of its secret keys matches.
 		for _, kv := range p.Secrets.Data {
 			switch {
 			case s.strict != "":
-				return kv.Key == s.strict
+				if kv.Key == s.strict {
+					return true
+				}
 			case s.regex != nil:
-				return s.regex.MatchString(kv.Key)
+				if s.regex.MatchString(kv.Key) {
+					return true
+				}
 			case s.g != nil:
-				return s.g.Match(kv.Key)
+				if s.g.Match(kv.Key) {
+					return true
+				}
 			}
 		}
 	}
 
-	return match
+	return false
 }
