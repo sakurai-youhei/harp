@@ -125,8 +125,12 @@ func Apply(spec *bundlev1.Patch, b *bundlev1.Bundle, values map[string]interface
 			continue
 		}
 
-		// Ignore non creation rules and non strict matcher
-		if !r.Package.Create || r.Selector.MatchPath.Strict == "" {
+		if r.Package == nil {
+			return nil, fmt.Errorf("unable to execute rule index %d: package is required", i)
+		}
+
+		// Ignore non creation rules
+		if !r.Package.Create {
 			continue
 		}
 		if shouldIgnoreThisRule(i, r.Id, dopts) {
@@ -136,9 +140,15 @@ func Apply(spec *bundlev1.Patch, b *bundlev1.Bundle, values map[string]interface
 			break
 		}
 
+		// Package creation requires a strict path matcher
+		name := r.GetSelector().GetMatchPath().GetStrict()
+		if name == "" {
+			return nil, fmt.Errorf("unable to execute rule index %d: package creation requires a matchPath.strict selector", i)
+		}
+
 		// Create a package
 		p := &bundlev1.Package{
-			Name: r.Selector.MatchPath.Strict,
+			Name: name,
 		}
 
 		_, err := executeRule(r, p, values)
